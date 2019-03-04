@@ -99,11 +99,11 @@ function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=
         end
     end
     #if Logging._root.level ≤ Logging.DEBUG
-        loglevel = :iter
+    #    loglevel = :iter
     #elseif Logging._root.level ≤ Logging.INFO
     #    loglevel = :final
     #else
-    #    loglevel = :none
+        loglevel = :none
     #end
     km = Clustering.kmeans(xx'[:,:], n, maxiter=nInit, display = loglevel)
     μ::Matrix{T} = km.centers'
