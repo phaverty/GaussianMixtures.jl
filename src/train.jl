@@ -74,7 +74,6 @@ end
 function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=10, sparse=0) where T
     nₓ, d = size(x)
     hist = [History(@sprintf("Initializing GMM, %d Gaussians %s covariance %d dimensions using %d data points", n, diag, d, nₓ))]
-    @info(last(hist).s)
     ## subsample x to max 1000 points per mean
     nneeded = 1000*n
     if nₓ < nneeded
@@ -98,14 +97,8 @@ function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=
             xx = vcat(yy...)
         end
     end
-    #if Logging._root.level ≥ Logging.DEBUG
-    #    loglevel = :iter
-    #elseif Logging._root.level ≥ Logging.INFO
-    #    loglevel = :final
-    #else
-        loglevel = :none
-    #end
-    km = Clustering.kmeans(xx'[:,:], n, maxiter=nInit, display = loglevel)
+
+    km = Clustering.kmeans(xx'[:,:], n, maxiter=nInit, display = :none)
     μ::Matrix{T} = km.centers'
     if kind == :diag
         ## helper that deals with centers with singleton datapoints.
@@ -135,7 +128,6 @@ function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=
     nxx = size(xx,1)
     ng = length(w)
     push!(hist, History(string("K-means with ", nxx, " data points using ", km.iterations, " iterations\n", @sprintf("%3.1f data points per parameter",nxx/((d+1)ng)))))
-    @info(last(hist).s)
     gmm = GMM(w, μ, Σ, hist, nxx)
     sanitycheck!(gmm)
     em!(gmm, x; nIter=nIter, sparse=sparse)
@@ -150,14 +142,11 @@ function GMM2(n::Int, x::DataOrMatrix; kind=:diag, nIter::Int=10, nFinal::Int=nI
     2^log2n == n || error("n must be power of 2")
     gmm = GMM(x, kind=kind)
     tll = [avll(gmm,x)]
-    @info("0: avll = ", tll[1])
     for i=1:log2n
         gmm = gmmsplit(gmm)
         avll = em!(gmm, x; nIter=i==log2n ? nFinal : nIter, sparse=sparse)
-        @info(i, ": avll = ", avll)
         append!(tll, avll)
     end
-    @info("Total log likelihood: ", tll)
     gmm
 end
 
@@ -189,9 +178,6 @@ function gmmsplit(gmm::GMM{T}; minweight=1e-5, sep=0.2) where T
     ## In this function i, j, and k all index Gaussians
     maxi = reverse(sortperm(gmm.w))
     offInd = findall(gmm.w .< minweight)
-    if (length(offInd)>0)
-        @info("Removing Gaussians with no data");
-    end
     for i=1:length(offInd)
         gmm.w[maxi[i]] = gmm.w[offInd[i]] = gmm.w[maxi[i]]/2;
         gmm.μ[offInd[i],:] = gmm.μ[maxi[i],:] + tsep * √gmm.Σ[maxi[i],:]
@@ -239,7 +225,6 @@ function em!(gmm::GMM, x::DataOrMatrix; nIter::Int = 10, varfloor::Float64=1e-3,
     initc = gmm.Σ
     ll = zeros(nIter)
     gmmkind = kind(gmm)
-    @info(string("Running ", nIter, " iterations EM on ", gmmkind, " cov GMM with ", ng, " Gaussians in ", d, " dimensions"))
     for i=1:nIter
         ## E-step
         nₓ, ll[i], N, F, S = stats(gmm, x, parallel=true)
