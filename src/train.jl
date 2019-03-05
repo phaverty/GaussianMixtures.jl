@@ -64,7 +64,6 @@ function sanitycheck!(gmm::GMM)
     if (np=length(pathological)) > 0
         mesg = string(np, " pathological elements normalized")
         addhist!(gmm, mesg)
-        @warn(mesg)
     end
     pathological
 end
@@ -237,13 +236,12 @@ function em!(gmm::GMM, x::DataOrMatrix; nIter::Int = 10, varfloor::Float64=1e-3,
             tooSmall = any(gmm.Σ .< varfloor, dims=2)[:]
             if (any(tooSmall))
                 ind = findall(tooSmall)
-                @warn("Variances had to be floored ", ind)
                 gmm.Σ[ind,:] = initc[ind,:]
             end
         elseif gmmkind == :full
             for k=1:ng
                 if N[k] < d
-                    @warn(@sprintf("Too low occupancy count %3.1f for Gausian %d", N[k], k))
+                    #@warn(@sprintf("Too low occupancy count %3.1f for Gausian %d", N[k], k))
                 else
                     μk = vec(gmm.μ[k,:]) ## v0.5 arraymageddon
                     gmm.Σ[k] = cholinv(S[k] / N[k] - μk * μk')
