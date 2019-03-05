@@ -27,6 +27,9 @@ include("recognizer.jl")
 include("distributions.jl")
 include("scikitlearn.jl")
 
+include("precompile.jl")
+_precompile_()
+
 export GMM, VGMM, GMMprior, CSstats, Cstats, History, Data, DataOrMatrix,
 gmmsplit, em!, maxapost, llpg, avll, gmmposterior, sanitycheck!,
 history, show, stats, nparams, means, covars, weights, setmem, vec, rand, kind, dmap
