@@ -20,8 +20,8 @@ function GMM(x::DataOrMatrix{T}; kind=:diag) where T <: AbstractFloat
     end
 #    hist = History(@sprintf("Initlialized single Gaussian d=%d kind=%s with %d data points",
 #                            d, kind, n))
-    hist = History("")
-    GMM(ones(T,1), μ, Σ, [hist], n)
+    hist = [History("")]
+    GMM(ones(T,1), μ, Σ, hist, n)
 end
 ## Also allow a Vector, :full makes no sense
 GMM(x::Vector{T}) where T <: AbstractFloat = GMM(reshape(x, length(x), 1))  # strange idiom...
@@ -128,7 +128,7 @@ function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=
     nxx = size(xx,1)
     ng = length(w)
 #    push!(hist, History(string("K-means with ", nxx, " data points using ", km.iterations, " iterations\n", @sprintf("%3.1f data points per parameter",nxx/((d+1)ng)))))
-    hist = History("")
+    hist = [History("")]
     gmm = GMM(w, μ, Σ, hist, nxx)
     sanitycheck!(gmm)
     em!(gmm, x; nIter=nIter, sparse=sparse)
@@ -212,7 +212,7 @@ function gmmsplit(gmm::GMM{T}; minweight=1e-5, sep=0.2) where T
         end
     end
 #    hist = vcat(gmm.hist, History(@sprintf("split to %d Gaussians", 2n)))
-    hist = History("")
+    hist = [History("")]
     GMM(w, μ, Σ, hist, gmm.nx)
 end
 
