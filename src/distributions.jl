@@ -6,7 +6,8 @@ function GMM(m::MixtureModel{Multivariate,Continuous,FullNormal})
     μ = hcat([c.μ for c in components(m)]...)'
     w = probs(m)
     n, d = size(μ)
-    h = [History(@sprintf("Initialization from MixtureModel n=%d, d=%d, kind=full", n, d))]
+    #h = [History(@sprintf("Initialization from MixtureModel n=%d, d=%d, kind=full", n, d))]
+    h = [History("")]
     GMM(w, μ, Σ, h, 0)
 end
 
@@ -15,7 +16,8 @@ function GMM(m::MixtureModel{Multivariate,Continuous,DiagNormal})
     μ = hcat([c.μ for c in components(m)]...)'
     w = probs(m)
     n, d = size(μ)
-    h = [History(@sprintf("Initialization from MixtureModel n=%d, d=%d, kind=diag", n, d))]
+    h = [History("")]
+#    h = [History(@sprintf("Initialization from MixtureModel n=%d, d=%d, kind=diag", n, d))]
     GMM(w, μ, Σ, h, 0)
 end
 

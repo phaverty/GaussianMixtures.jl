@@ -260,7 +260,7 @@ function emstep!(vg::VGMM, x::DataOrMatrix)
         N, mx, S, Elogπ, ElogdetΛ = map(x->rmdisfunct(x,keep), (N, mx, S, Elogπ, ElogdetΛ))
         vg.α, vg.β, vg.m, vg.ν, vg.W = map(x->rmdisfunct(x,keep), (vg.α, vg.β, vg.m, vg.ν, vg.W))
         vg.n = n
-        addhist!(vg, @sprintf("dropping number of Gaussions to %d",n))
+#        addhist!(vg, @sprintf("dropping number of Gaussions to %d",n))
     end
     ## then compute the lowerbound
     L = lowerbound(vg, N, mx, S, Elogπ, ElogdetΛ, ElogZπqZ)
@@ -280,10 +280,10 @@ function em!(vg::VGMM, x; nIter=50)
             nIter = i
             break
         end
-        addhist!(vg, @sprintf("iteration %d, lowerbound %f", i, last(L)/nₓ/vg.d))
+#        addhist!(vg, @sprintf("iteration %d, lowerbound %f", i, last(L)/nₓ/vg.d))
     end
     L ./= nₓ*vg.d
-    addhist!(vg, @sprintf("%d variational Bayes EM-like iterations using %d data points, final lowerbound %f", nIter, nₓ, last(L)))
+#    addhist!(vg, @sprintf("%d variational Bayes EM-like iterations using %d data points, final lowerbound %f", nIter, nₓ, last(L)))
     L
 end
 

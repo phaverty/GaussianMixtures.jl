@@ -18,8 +18,9 @@ function GMM(x::DataOrMatrix{T}; kind=:diag) where T <: AbstractFloat
     else
         error("Unknown kind")
     end
-    hist = History(@sprintf("Initlialized single Gaussian d=%d kind=%s with %d data points",
-                            d, kind, n))
+#    hist = History(@sprintf("Initlialized single Gaussian d=%d kind=%s with %d data points",
+#                            d, kind, n))
+    hist = History("")
     GMM(ones(T,1), μ, Σ, [hist], n)
 end
 ## Also allow a Vector, :full makes no sense
@@ -72,7 +73,7 @@ end
 ## initialize GMM using Clustering.kmeans (which uses a method similar to kmeans++)
 function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=10, sparse=0) where T
     nₓ, d = size(x)
-    hist = [History(@sprintf("Initializing GMM, %d Gaussians %s covariance %d dimensions using %d data points", n, diag, d, nₓ))]
+#    hist = [History(@sprintf("Initializing GMM, %d Gaussians %s covariance %d dimensions using %d data points", n, diag, d, nₓ))]
     ## subsample x to max 1000 points per mean
     nneeded = 1000*n
     if nₓ < nneeded
@@ -126,7 +127,8 @@ function GMMk(n::Int, x::DataOrMatrix{T}; kind=:diag, nInit::Int=50, nIter::Int=
     w::Vector{T} = km.counts ./ sum(km.counts)
     nxx = size(xx,1)
     ng = length(w)
-    push!(hist, History(string("K-means with ", nxx, " data points using ", km.iterations, " iterations\n", @sprintf("%3.1f data points per parameter",nxx/((d+1)ng)))))
+#    push!(hist, History(string("K-means with ", nxx, " data points using ", km.iterations, " iterations\n", @sprintf("%3.1f data points per parameter",nxx/((d+1)ng)))))
+    hist = History("")
     gmm = GMM(w, μ, Σ, hist, nxx)
     sanitycheck!(gmm)
     em!(gmm, x; nIter=nIter, sparse=sparse)
@@ -209,7 +211,8 @@ function gmmsplit(gmm::GMM{T}; minweight=1e-5, sep=0.2) where T
             error("Unknown kind")
         end
     end
-    hist = vcat(gmm.hist, History(@sprintf("split to %d Gaussians", 2n)))
+#    hist = vcat(gmm.hist, History(@sprintf("split to %d Gaussians", 2n)))
+    hist = History("")
     GMM(w, μ, Σ, hist, gmm.nx)
 end
 
@@ -251,9 +254,9 @@ function em!(gmm::GMM, x::DataOrMatrix; nIter::Int = 10, varfloor::Float64=1e-3,
             error("Unknown kind")
         end
         sanitycheck!(gmm)
-        loginfo = @sprintf("iteration %d, average log likelihood %f",
-                           i, ll[i] / (nₓ*d))
-        addhist!(gmm, loginfo)
+#        loginfo = @sprintf("iteration %d, average log likelihood %f",
+#                           i, ll[i] / (nₓ*d))
+#        addhist!(gmm, loginfo)
     end
     if nIter>0
         ll /= nₓ * d
@@ -263,7 +266,7 @@ function em!(gmm::GMM, x::DataOrMatrix; nIter::Int = 10, varfloor::Float64=1e-3,
         nₓ = size(x,1)
     end
     gmm.nx = nₓ
-    addhist!(gmm,@sprintf("EM with %d data points %d iterations avll %f\n%3.1f data points per parameter",nₓ,nIter,finalll,nₓ/nparams(gmm)))
+#    addhist!(gmm,@sprintf("EM with %d data points %d iterations avll %f\n%3.1f data points per parameter",nₓ,nIter,finalll,nₓ/nparams(gmm)))
     ll
 end
 

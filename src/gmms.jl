@@ -18,7 +18,8 @@ function GMM(n::Int, d::Int; kind::Symbol=:diag)
     else
         error("Unknown kind")
     end
-    hist = [History(@sprintf "Initialization n=%d, d=%d, kind=%s" n d kind)]
+    hist = [History("")]
+#    hist = [History(@sprintf "Initialization n=%d, d=%d, kind=%s" n d kind)]
     GMM(w, μ, Σ, hist, 0)
 end
 

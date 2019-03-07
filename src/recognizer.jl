@@ -40,7 +40,8 @@ function maxapost(gmm::GMM, x::Matrix{T}, r::Real=16.; means::Bool=true,
     else
         Σ = gmm.Σ
     end
-    hist = vcat(gmm.hist, History(@sprintf "MAP adapted with %d data points relevance %3.1f %s %s %s" size(x,1) r means ? "means" : ""  weights ? "weights" : "" covars ? "covars" : ""))
+    hist = gmm.hist
+#    hist = vcat(gmm.hist, History(@sprintf "MAP adapted with %d data points relevance %3.1f %s %s %s" size(x,1) r means ? "means" : ""  weights ? "weights" : "" covars ? "covars" : ""))
     return GMM(w, μ, Σ, hist, nₓ)
 end
 

@@ -17,8 +17,9 @@ function Base.rand(::Type{GMM}, ng::Int, d::Int; sep=2.0, kind=:full)
         error("Unknown kind")
     end
     w = ones(ng)/ng
-    hist = History(@sprintf("Generated random %s covariance GMM with %d Gaussians of dimension %d",
-                            kind, ng, d))
+    hist = [History("")]
+#    hist = History(@sprintf("Generated random %s covariance GMM with %d Gaussians of dimension %d",
+#                            kind, ng, d))
     GMM(w, μ, Σ, [hist], 0)
 end
 
